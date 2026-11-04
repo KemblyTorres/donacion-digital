@@ -1,1 +1,318 @@
-/* styles.css */
+
+/* tipografia */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+/* paleta de colores */
+
+:root {
+    --verde-principal: #2E7D32;
+    --verde-oscuro: #1A2E1A;
+    --verde-titulo: #2A4A2A;
+    --verde-medio: #66BB6A;
+    --verde-claro: #81C784;
+    --verde-suave: #A5D6A7;
+    --verde-fondo: #E8F5E9;
+    --texto-secundario: #5A7A5A;
+    --texto-suave: #6B8A6B;
+    --borde: #E2EDE2;
+    --fondo: #F8FAF8;
+    --rojo: #C62828;
+    --naranja: #E65100;
+}
+
+/* base */
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: var(--fondo);
+    color: var(--verde-oscuro);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+h1, h2, h3, h4, h5 {
+    font-weight: 800;
+    color: var(--verde-oscuro);
+}
+
+a {
+    color: var(--verde-principal);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--verde-titulo);
+    text-decoration: underline;
+}
+
+.texto-secundario {
+    color: var(--texto-secundario);
+}
+
+/* encabezado */
+
+.encabezado {
+    background-color: white;
+    border-bottom: 1px solid var(--borde);
+    padding: 12px 0;
+}
+
+.encabezado-contenido {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo:hover {
+    text-decoration: none;
+}
+
+.logo-icono {
+    width: 36px;
+    height: 36px;
+    background-color: var(--verde-principal);
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.logo-titulo {
+    display: block;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--verde-principal);
+    line-height: 1.1;
+}
+
+.logo-subtitulo {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--texto-secundario);
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* botones (junto a btn de Bootstrap) */
+
+.btn-donacion {
+    --bs-btn-color: white;
+    --bs-btn-bg: var(--verde-principal);
+    --bs-btn-border-color: var(--verde-principal);
+    --bs-btn-hover-color: white;
+    --bs-btn-hover-bg: var(--verde-titulo);
+    --bs-btn-hover-border-color: var(--verde-titulo);
+    --bs-btn-active-color: white;
+    --bs-btn-active-bg: var(--verde-titulo);
+    --bs-btn-active-border-color: var(--verde-titulo);
+    --bs-btn-disabled-color: white;
+    --bs-btn-disabled-bg: var(--verde-claro);
+    --bs-btn-disabled-border-color: var(--verde-claro);
+    font-weight: 700;
+}
+
+.btn-donacion-borde {
+    --bs-btn-color: var(--verde-principal);
+    --bs-btn-bg: white;
+    --bs-btn-border-color: var(--verde-principal);
+    --bs-btn-hover-color: var(--verde-principal);
+    --bs-btn-hover-bg: var(--verde-fondo);
+    --bs-btn-hover-border-color: var(--verde-principal);
+    --bs-btn-active-color: var(--verde-principal);
+    --bs-btn-active-bg: var(--verde-fondo);
+    --bs-btn-active-border-color: var(--verde-principal);
+    font-weight: 700;
+}
+
+/* cards (el espacio interno lo da card-body de Bootstrap) */
+
+.card {
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(26, 46, 26, 0.06);
+}
+
+.card-formulario {
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* formularios */
+
+.form-label {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.form-control {
+    background-color: var(--fondo);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    background-color: white;
+    border-color: var(--verde-principal);
+    box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.2);
+}
+
+.form-text {
+    color: var(--texto-suave);
+}
+
+.form-check-input:checked {
+    background-color: var(--verde-principal);
+    border-color: var(--verde-principal);
+}
+
+.form-check-input:focus {
+    border-color: var(--verde-principal);
+    box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.2);
+}
+
+.titulo-seccion {
+    border-left: 3px solid var(--verde-principal);
+    padding-left: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--verde-principal);
+}
+
+/* validaciones */
+
+.input-error {
+    border-color: var(--rojo);
+}
+
+.input-error:focus {
+    border-color: var(--rojo);
+    box-shadow: 0 0 0 0.2rem rgba(198, 40, 40, 0.2);
+}
+
+.mensaje-error {
+    display: block;
+    color: var(--rojo);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.mensaje-error:empty {
+    display: none;
+}
+
+/* alerts */
+
+.alert-error {
+    background-color: #FDECEA;
+    border: 1px solid #F5C6C6;
+    color: var(--rojo);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.alert-aviso {
+    background-color: #FFF3E0;
+    border: 1px solid #FFCC80;
+    color: var(--naranja);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.alert-exito {
+    background-color: var(--verde-fondo);
+    border: 1px solid var(--verde-suave);
+    color: var(--verde-principal);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+/* selector de tipo de usuario (registro) */
+
+.tipo-usuario {
+    background-color: white;
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    height: 100%;
+}
+
+.tipo-usuario:hover {
+    border-color: var(--verde-medio);
+}
+
+.tipo-usuario.activo {
+    background-color: var(--verde-fondo);
+    border: 2px solid var(--verde-principal);
+}
+
+.tipo-usuario h3 {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.tipo-usuario p {
+    font-size: 12px;
+    color: var(--texto-secundario);
+    margin: 0;
+}
+
+/* footer */
+
+.footer {
+    background-color: var(--verde-oscuro);
+    color: var(--verde-claro);
+    padding: 32px 0 16px 0;
+    margin-top: 48px;
+}
+
+.footer .logo-titulo {
+    color: white;
+}
+
+.footer .logo-subtitulo {
+    color: var(--verde-claro);
+}
+
+.footer a {
+    color: var(--verde-claro);
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.footer-copyright {
+    border-top: 1px solid var(--verde-titulo);
+    margin-top: 24px;
+    padding-top: 16px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--texto-secundario);
+}
