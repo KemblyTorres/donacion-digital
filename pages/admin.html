@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración | Donación Digital</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+
+<body>
+
+    <!-- encabezado -->
+    <header class="encabezado">
+        <div class="container-fluid px-4 encabezado-contenido">
+            <a href="../index.html" class="logo">
+                <span class="logo-icono"><i class="bi bi-box-seam"></i></span>
+                <span>
+                    <span class="logo-titulo">Donación Digital</span>
+                    <span class="logo-subtitulo">Panel del Administrador</span>
+                </span>
+            </a>
+
+            <div class="usuario-admin">
+                <span class="avatar avatar-administrador">AD</span>
+                <span>
+                    <strong class="d-block">Administrador</strong>
+                    <small class="texto-secundario">admin@donacion.com</small>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-contenedor">
+
+        <!-- menu lateral -->
+        <aside class="admin-menu">
+            <p class="admin-menu-titulo">Navegación</p>
+            <nav>
+                <a href="#dashboard" class="activo"><i class="bi bi-grid"></i> Dashboard</a>
+                <a href="#usuarios"><i class="bi bi-people"></i> Usuarios</a>
+                <a href="#categorias"><i class="bi bi-tags"></i> Categorías</a>
+                <a href="#donaciones"><i class="bi bi-box-seam"></i> Donaciones</a>
+                <a href="#solicitudes"><i class="bi bi-inbox"></i> Solicitudes <span class="menu-contador" id="contadorPendientes">0</span></a>
+            </nav>
+        </aside>
+
+        <main class="admin-contenido">
+
+            <!-- resumen -->
+            <section id="dashboard">
+                <h1 class="titulo-panel">Panel de Administración</h1>
+                <p class="texto-secundario mb-4">Monitoree la actividad de la plataforma y gestione usuarios, categorías, donaciones y solicitudes.</p>
+
+                <div class="row g-4">
+                    <div class="col-xl-8">
+                        <div class="row g-3">
+                            <div class="col-sm-6 col-lg-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <span class="icono-dato icono-verde"><i class="bi bi-person-plus"></i></span>
+                                        <p class="numero-dato" id="totalUsuarios">0</p>
+                                        <h2 class="h6 mb-1">Usuarios Registrados</h2>
+                                        <small class="texto-secundario">Total en la plataforma</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <span class="icono-dato icono-azul"><i class="bi bi-building"></i></span>
+                                        <p class="numero-dato" id="totalOrganizaciones">0</p>
+                                        <h2 class="h6 mb-1">Organizaciones Activas</h2>
+                                        <small class="texto-secundario">Pueden solicitar donaciones</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <span class="icono-dato icono-morado"><i class="bi bi-box-seam"></i></span>
+                                        <p class="numero-dato" id="totalDisponibles">0</p>
+                                        <h2 class="h6 mb-1">Donaciones Disponibles</h2>
+                                        <small class="texto-secundario">Publicadas actualmente</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <span class="icono-dato icono-verde"><i class="bi bi-check-circle"></i></span>
+                                        <p class="numero-dato" id="totalEntregadas">0</p>
+                                        <h2 class="h6 mb-1">Donaciones Entregadas</h2>
+                                        <small class="texto-secundario">Histórico total</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <span class="icono-dato icono-naranja"><i class="bi bi-clock"></i></span>
+                                        <p class="numero-dato" id="totalPendientes">0</p>
+                                        <h2 class="h6 mb-1">Solicitudes Pendientes</h2>
+                                        <small class="texto-secundario">Esperan respuesta del donante</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <span class="icono-dato icono-rojo"><i class="bi bi-tags"></i></span>
+                                        <p class="numero-dato" id="totalCategorias">0</p>
+                                        <h2 class="h6 mb-1">Categorías</h2>
+                                        <small class="texto-secundario">Disponibles para publicar</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h2 class="titulo-tarjeta mb-2">Actividad reciente</h2>
+                                <ul class="lista-actividad" id="listaActividad"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- usuarios -->
+            <section id="usuarios" class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                        <div>
+                            <h2 class="titulo-tarjeta">Gestión de Usuarios</h2>
+                            <p class="texto-secundario small mb-0">Active o desactive cuentas. Un usuario inactivo no puede iniciar sesión.</p>
+                        </div>
+                        <span class="pill pill-activo" id="cantidadUsuarios"></span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table tabla-admin align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Correo</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                    <th>Registro</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaUsuarios"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- categorias -->
+            <section id="categorias" class="card">
+                <div class="card-body">
+                    <h2 class="titulo-tarjeta">Categorías</h2>
+                    <p class="texto-secundario small">Una categoría con donaciones asociadas no se puede eliminar.</p>
+
+                    <div class="row g-4">
+                        <div class="col-md-5">
+                            <form id="formCategoria" novalidate>
+                                <label for="nombreCategoria" class="form-label">Nueva categoría</label>
+                                <input type="text" id="nombreCategoria" class="form-control" placeholder="Ej. Artículos de higiene">
+                                <span class="mensaje-error" id="errorCategoria"></span>
+                                <button type="submit" class="btn btn-donacion mt-3">Agregar categoría</button>
+                            </form>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="alert-error mb-2" id="avisoCategoria" style="display: none;"></div>
+                            <ul class="lista-admin" id="listaCategorias"></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- donaciones -->
+            <section id="donaciones" class="card">
+                <div class="card-body">
+                    <h2 class="titulo-tarjeta">Donaciones Registradas</h2>
+                    <p class="texto-secundario small">Todas las donaciones publicadas en la plataforma y su estado actual.</p>
+                    <ul class="lista-admin" id="listaDonaciones"></ul>
+                </div>
+            </section>
+
+            <!-- solicitudes -->
+            <section id="solicitudes" class="card">
+                <div class="card-body">
+                    <h2 class="titulo-tarjeta">Solicitudes Realizadas</h2>
+                    <p class="texto-secundario small">Solicitudes enviadas por las organizaciones beneficiarias.</p>
+                    <div class="table-responsive">
+                        <table class="table tabla-admin align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Donación</th>
+                                    <th>Donante</th>
+                                    <th>Motivo</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaSolicitudes"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ventana de confirmacion -->
+    <div class="modal fade" id="modalConfirmar" tabindex="-1" aria-labelledby="modalTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-confirmar">
+                <span class="icono-dato icono-rojo mb-3" id="modalIcono"><i class="bi bi-trash"></i></span>
+                <h2 class="h4" id="modalTitulo"></h2>
+                <p class="texto-secundario mb-0" id="modalTexto"></p>
+                <div class="d-flex gap-2 mt-4">
+                    <button type="button" class="btn btn-donacion-borde flex-fill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-peligro flex-fill" id="modalBoton" onclick="ejecutarAccion()"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/catalogo.js"></script>
+    <script src="../js/admin.js"></script>
+</body>
+
+</html>
