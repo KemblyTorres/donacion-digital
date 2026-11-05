@@ -49,6 +49,7 @@ function guardarDonacion() {
   let cantidad = document.getElementById("cantidad").value;
   let estado_bien = document.getElementById("estado_bien").value;
   let provincia = document.getElementById("provincia").value;
+  let fotografia = document.getElementById("fotografia").value.trim();
   let indice = document.getElementById("idDonacion").value;   // vacío = publicar, número = editar
 
   let valido = true;
@@ -94,7 +95,7 @@ function guardarDonacion() {
       cantidad: cantidad,
       estado_bien: estado_bien,
       provincia: provincia,
-      fotografia: "",             
+      fotografia: fotografia,
       donante: nombreDonante,     
       estado: "Disponible"
     };
@@ -108,6 +109,7 @@ function guardarDonacion() {
     d.cantidad = cantidad;
     d.estado_bien = estado_bien;
     d.provincia = provincia;
+    d.fotografia = fotografia;
   }
 
   guardarEnStorage();
@@ -130,6 +132,7 @@ function editarDonacion(i) {
   document.getElementById("cantidad").value = d.cantidad;
   document.getElementById("estado_bien").value = d.estado_bien;
   document.getElementById("provincia").value = d.provincia;
+  document.getElementById("fotografia").value = d.fotografia;
 
   document.getElementById("idDonacion").value = i;
 
@@ -194,6 +197,7 @@ function limpiarFormulario() {
   document.getElementById("categoria").value = "";
   document.getElementById("estado_bien").value = "";
   document.getElementById("provincia").value = "";
+  document.getElementById("fotografia").value = "";
   document.getElementById("idDonacion").value = "";
 
   document.getElementById("tituloFormulario").innerHTML = "Publicar donación";
