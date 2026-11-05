@@ -6,29 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitudes Recibidas | Donación Digital</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/admin.css">
 </head>
 
 <body>
 
-    <!-- encabezado -->
+    <!-- encabezado (nav del donante) -->
     <header class="encabezado">
         <div class="container encabezado-contenido">
             <a href="../index.html" class="logo">
                 <span>
                     <span class="logo-titulo">Donación Digital</span>
-                    <span class="logo-subtitulo">Bienes de Primera Necesidad</span>
+                    <span class="logo-subtitulo">Panel del Donante</span>
                 </span>
             </a>
 
             <nav>
                 <ul class="menu">
-                    <li><a href="catalogo.html" class="text-secondary">Catálogo</a></li>
-                    <li><a href="solicitudes-recibidas.html" class="text-success">Solicitudes Recibidas</a></li>
-                    <li><a href="login.html" class="btn btn-donacion-borde btn-sm">Iniciar Sesión</a></li>
-                    <li><a href="registro.html" class="btn btn-donacion btn-sm">Registrarse</a></li>
+                    <li><a href="donaciones.html">Mis donaciones</a></li>
+                    <li><a href="solicitudes-recibidas.html" class="menu-activo">Solicitudes recibidas</a></li>
+                    <li class="d-flex align-items-center gap-2">
+                        <span class="logo-icono">D</span>
+                        <span>
+                            <span class="logo-titulo">Donante de prueba</span>
+                            <span class="logo-subtitulo">Donante</span>
+                        </span>
+                    </li>
+                    <li><a href="login.html" class="btn btn-donacion-borde btn-sm">Cerrar sesión</a></li>
                 </ul>
             </nav>
         </div>
@@ -52,12 +57,12 @@
     <div class="modal fade" id="modalConfirmar" tabindex="-1" aria-labelledby="modalTitulo" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content modal-confirmar">
-                <span class="icono-dato icono-rojo mb-3" id="modalIcono"><i class="bi bi-trash"></i></span>
+                <span class="icono-dato icono-rojo mb-3" id="modalIcono">🗑️</span>
                 <h2 class="h4 fw-bold" id="modalTitulo"></h2>
                 <p class="texto-secundario mb-0" id="modalTexto"></p>
                 <div class="d-flex gap-2 mt-4">
                     <button type="button" class="btn btn-donacion-borde flex-fill" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-peligro flex-fill" id="modalBoton" onclick="ejecutarAccion()"></button>
+                    <button type="button" class="btn btn-peligro flex-fill" id="modalBoton" data-bs-dismiss="modal" onclick="confirmarAccion()"></button>
                 </div>
             </div>
         </div>
