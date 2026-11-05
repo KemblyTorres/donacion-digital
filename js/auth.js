@@ -1,1 +1,156 @@
-// auth.js
+// Datos de prueba. Simulan la base de datos. PHP y MySQL se usan hasta el Avance 3.
+
+let usuarios = [
+    {correo: "donante@demo.com", clave: "donor123", rol: "donante"},
+    {correo: "org@demo.com", clave: "org12345", rol: "organizacion"},
+    {correo: "admin@donacion.com", clave: "admin123", rol: "administrador"}
+];
+
+
+let tipoUsuario = "";
+let errores = 0;
+
+
+let campos = ["nombre", "correo", "clave", "confirmar", "telefono",
+              "id-organizacion", "representante"];
+
+function elegirTipo(tipo) {
+
+    tipoUsuario = tipo;
+    limpiarErrores();
+
+    document.getElementById("tipo-donante").className = "tipo-usuario";
+    document.getElementById("tipo-organizacion").className = "tipo-usuario";
+
+    if (tipo == "donante") {
+
+        document.getElementById("tipo-donante").className = "tipo-usuario activo";
+        document.getElementById("titulo-seccion").textContent = "Información del donante";
+        document.getElementById("texto-nombre").textContent = "Nombre Completo";
+        document.getElementById("nombre").placeholder = "Ej. María González";
+        document.getElementById("datos-organizacion").style.display = "none";
+
+    } else {
+
+        document.getElementById("tipo-organizacion").className = "tipo-usuario activo";
+        document.getElementById("titulo-seccion").textContent = "Información de la organización";
+        document.getElementById("texto-nombre").textContent = "Nombre de la Organización";
+        document.getElementById("nombre").placeholder = "Ej. Fundación Esperanza";
+        document.getElementById("datos-organizacion").style.display = "block";
+    }
+
+    document.getElementById("mensaje-tipo").style.display = "none";
+    document.getElementById("formulario-registro").style.display = "block";
+}
+
+function limpiarErrores() {
+
+    for (let i = 0; i < campos.length; i++) {
+        document.getElementById(campos[i]).className = "form-control";
+        document.getElementById("error-" + campos[i]).textContent = "";
+    }
+
+    document.getElementById("alerta-registro").style.display = "none";
+}
+
+function mostrarError(campo, texto) {
+
+    document.getElementById(campo).className = "form-control input-error";
+    document.getElementById("error-" + campo).textContent = texto;
+    errores = errores + 1;
+}
+
+function correoYaRegistrado(correo) {
+
+    for (let i = 0; i < usuarios.length; i++) {
+        if (usuarios[i].correo == correo.toLowerCase()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function registrar() {
+
+    limpiarErrores();
+    errores = 0;
+
+    let nombre = document.getElementById("nombre").value.trim();
+    let correo = document.getElementById("correo").value.trim();
+    let clave = document.getElementById("clave").value;
+    let confirmar = document.getElementById("confirmar").value;
+    let telefono = document.getElementById("telefono").value.trim();
+
+
+    if (nombre == "") {
+        mostrarError("nombre", "El nombre es requerido.");
+    }
+
+
+    if (correo == "") {
+        mostrarError("correo", "El correo es requerido.");
+    } else if (!correo.includes("@") || !correo.includes(".")) {
+        mostrarError("correo", "Ingrese un correo electrónico válido.");
+    } else if (correoYaRegistrado(correo)) {
+        mostrarError("correo", "Este correo ya se encuentra registrado.");
+    }
+
+ 
+    if (clave == "") {
+        mostrarError("clave", "La contraseña es requerida.");
+    } else if (clave.length < 8) {
+        mostrarError("clave", "La contraseña debe contener al menos 8 caracteres.");
+    }
+
+ 
+    if (confirmar == "") {
+        mostrarError("confirmar", "Confirme su contraseña.");
+    } else if (confirmar != clave) {
+        mostrarError("confirmar", "Las contraseñas no coinciden.");
+    }
+
+  
+    if (telefono == "") {
+        mostrarError("telefono", "El teléfono es requerido.");
+    } else if (telefono.length < 8) {
+        mostrarError("telefono", "Ingrese un número de teléfono válido.");
+    }
+
+  
+    if (tipoUsuario == "organizacion") {
+
+        let idOrganizacion = document.getElementById("id-organizacion").value.trim();
+        let representante = document.getElementById("representante").value.trim();
+
+        if (idOrganizacion == "") {
+            mostrarError("id-organizacion", "El ID de la organización es requerido.");
+        } else if (idOrganizacion.length != 12 || idOrganizacion[1] != "-" || idOrganizacion[5] != "-") {
+            mostrarError("id-organizacion", "El formato del ID debe ser 0-000-000000.");
+        }
+
+        if (representante == "") {
+            mostrarError("representante", "El representante autorizado es requerido.");
+        }
+    }
+
+ 
+    let alerta = document.getElementById("alerta-registro");
+
+    if (errores > 0) {
+
+        alerta.className = "alert-error mb-3";
+        alerta.textContent = "Por favor corrija los campos marcados antes de continuar.";
+        alerta.style.display = "block";
+
+    } else {
+
+        alerta.className = "alert-exito mb-3";
+        alerta.textContent = "Registro exitoso. Redirigiendo al inicio de sesión...";
+        alerta.style.display = "block";
+
+        setTimeout(function () {
+            window.location.href = "login.html";
+        }, 2000);
+    }
+}

@@ -1,1 +1,9 @@
-/* auth.css */
+.contenedor-auth {
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.titulo-auth {
+    font-size: 28px;
+}

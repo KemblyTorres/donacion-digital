@@ -1,12 +1,171 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>registro - Donación Digital</title>
+    <title>Registro - Donación Digital</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/auth.css">
 </head>
+
 <body>
+
+    <header class="encabezado">
+        <div class="container encabezado-contenido">
+            <a href="../index.html" class="logo">
+                <span>
+                    <span class="logo-titulo">Donación Digital</span>
+                    <span class="logo-subtitulo">Bienes de Primera Necesidad</span>
+                </span>
+            </a>
+
+            <p class="mb-0 texto-secundario">¿Ya tienes cuenta? <a href="login.html">Iniciar Sesión</a></p>
+        </div>
+    </header>
+
+
+    <main class="container py-5">
+        <div class="contenedor-auth">
+
+            <div class="text-center mb-4">
+                <h1 class="titulo-auth">Crea tu cuenta</h1>
+                <p class="texto-secundario">Elige tu tipo de usuario y completa la información requerida.</p>
+            </div>
+
+ 
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <div class="tipo-usuario" id="tipo-donante" onclick="elegirTipo('donante')">
+                        <h3>Donante</h3>
+                        <p>Publica donaciones y gestiona solicitudes.</p>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="tipo-usuario" id="tipo-organizacion" onclick="elegirTipo('organizacion')">
+                        <h3>Organización Social</h3>
+                        <p>Solicita donaciones y gestiona familias beneficiarias.</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-center texto-secundario small" id="mensaje-tipo">
+                Selecciona un tipo de usuario para continuar.
+            </p>
+
+  
+            <div class="card card-formulario" id="formulario-registro" style="display: none;">
+                <div class="card-body p-4">
+
+       
+                    <div id="alerta-registro" style="display: none;"></div>
+
+                    <form>
+                        <p class="titulo-seccion mb-3" id="titulo-seccion">Información del donante</p>
+
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">
+                                <span id="texto-nombre">Nombre Completo</span> <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="nombre" placeholder="Ej. María González">
+                            <small class="mensaje-error" id="error-nombre"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="correo" placeholder="correo@ejemplo.com">
+                            <small class="mensaje-error" id="error-correo"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="clave" class="form-label">Contraseña <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="clave" placeholder="Mínimo 8 caracteres">
+                            <div class="form-text">La contraseña debe contener al menos 8 caracteres.</div>
+                            <small class="mensaje-error" id="error-clave"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmar" class="form-label">Confirmar Contraseña <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="confirmar" placeholder="Repite tu contraseña">
+                            <small class="mensaje-error" id="error-confirmar"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Número de Teléfono <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="telefono" placeholder="Ej. +506 0000 0000">
+                            <small class="mensaje-error" id="error-telefono"></small>
+                        </div>
+
+               
+                        <div id="datos-organizacion" style="display: none;">
+                            <p class="titulo-seccion mt-4 mb-3">Datos de la organización</p>
+
+                            <div class="mb-3">
+                                <label for="id-organizacion" class="form-label">ID de la Organización <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="id-organizacion" placeholder="Ej. 0-000-000000">
+                                <small class="mensaje-error" id="error-id-organizacion"></small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="representante" class="form-label">Representante Autorizado <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="representante" placeholder="Nombre del representante legal">
+                                <small class="mensaje-error" id="error-representante"></small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <a href="../index.html" class="btn btn-donacion-borde w-50">Cancelar</a>
+                            <button type="button" class="btn btn-donacion w-50" onclick="registrar()">Registrarse</button>
+                        </div>
+
+                        <p class="text-center texto-secundario small mt-3 mb-0">
+                            Al registrarte, aceptas nuestra <a href="#">Política de Privacidad</a>
+                            y los <a href="#">Términos y Condiciones</a>.
+                        </p>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+
+    <footer class="footer">
+        <div class="container">
+            <div class="d-flex justify-content-between flex-wrap gap-3">
+
+                <div>
+                    <div class="logo">
+                        <span>
+                            <span class="logo-titulo">Donación Digital</span>
+                            <span class="logo-subtitulo">Bienes de Primera Necesidad</span>
+                        </span>
+                    </div>
+                    <p class="mt-3 mb-1">
+                        Conectamos donantes con organizaciones verificadas para llevar bienes esenciales a familias que más lo necesitan.
+                    </p>
+                    <a href="mailto:contacto@donaciondigital.org">contacto@donaciondigital.org</a>
+                </div>
+
+                <div class="d-flex flex-column gap-1">
+                    <a href="#">Política de Privacidad</a>
+                    <a href="#">Términos y Condiciones</a>
+                </div>
+
+            </div>
+
+            <p class="footer-copyright">
+                © 2026 Plataforma Digital de Donación de Bienes de Primera Necesidad. Todos los derechos reservados.
+            </p>
+        </div>
+    </footer>
+
+   
+    <script src="../js/auth.js"></script>
+
 </body>
+
 </html>
