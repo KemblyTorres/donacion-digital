@@ -12,7 +12,6 @@
 
 <body>
 
-
     <header class="encabezado">
         <div class="container encabezado-contenido">
             <a href="../index.html" class="logo">
@@ -26,7 +25,6 @@
         </div>
     </header>
 
-
     <main class="container py-5">
         <div class="contenedor-login">
 
@@ -38,7 +36,7 @@
             <div class="card card-formulario">
                 <div class="card-body p-4">
 
-              
+
                     <div id="alerta-login" style="display: none;"></div>
 
                     <form novalidate onsubmit="iniciarSesion(); return false;">
@@ -60,7 +58,7 @@
                                 <input class="form-check-input" type="checkbox" id="recordarme">
                                 <label class="form-check-label" for="recordarme">Recordarme</label>
                             </div>
-                            <a href="#" class="small">¿Olvidaste tu contraseña?</a>
+                            <a href="#" class="small" onclick="olvidoClave(); return false;">¿Olvidaste tu contraseña?</a>
                         </div>
 
                         <div class="d-flex gap-2">
@@ -81,7 +79,7 @@
 
             <p class="text-center mt-3"><a href="../index.html" class="small">‹ Volver al inicio</a></p>
 
-        
+
             <div class="credenciales-prueba text-center">
                 <strong>Credenciales de prueba:</strong><br>
                 donante@demo.com / donor123<br>
