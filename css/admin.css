@@ -76,6 +76,12 @@
     scroll-margin-top: 16px;
 }
 
+.menu-activo {
+    background-color: var(--verde-fondo);
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
 .usuario-admin {
     display: flex;
     align-items: center;

@@ -1,26 +1,35 @@
 // admin.js
 
 document.addEventListener("DOMContentLoaded", function () {
-    inicializarDatosAdmin();
+    cargarDatosIniciales();
 
-    if (document.getElementById("tablaUsuarios")) {
-        iniciarPanelAdmin();
-    } else if (document.getElementById("listaRecibidas")) {
+    if (document.getElementById("tablaUsuarios") != null) {
+        mostrarPanel();
+    }
+
+    if (document.getElementById("listaRecibidas") != null) {
         mostrarRecibidas();
     }
 });
 
+// localStorage y JSON: ver w3schools, Web Storage API y JSON
 function leer(clave) {
-    return JSON.parse(localStorage.getItem(clave)) || [];
+    let datos = JSON.parse(localStorage.getItem(clave));
+
+    if (datos == null) {
+        return [];
+    }
+
+    return datos;
 }
 
 function guardar(clave, datos) {
     localStorage.setItem(clave, JSON.stringify(datos));
 }
 
-// Datos de prueba hasta que exista la base de datos (Avance 3)
-function inicializarDatosAdmin() {
-    if (!localStorage.getItem("usuarios_app")) {
+function cargarDatosIniciales() {
+
+    if (localStorage.getItem("usuarios_app") == null) {
         guardar("usuarios_app", [
             { id: 1, nombre: "Administrador", correo: "admin@donacion.com", rol: "administrador", estado: "Activo", fecha: "2026-01-15" },
             { id: 2, nombre: "María González", correo: "donante@demo.com", rol: "donante", estado: "Activo", fecha: "2026-01-20" },
@@ -33,7 +42,7 @@ function inicializarDatosAdmin() {
         ]);
     }
 
-    if (!localStorage.getItem("categorias_app")) {
+    if (localStorage.getItem("categorias_app") == null) {
         guardar("categorias_app", [
             { id: 1, nombre: "Ropa y Calzado" },
             { id: 2, nombre: "Útiles Escolares" },
@@ -44,331 +53,463 @@ function inicializarDatosAdmin() {
     }
 }
 
-// Ventana de confirmacion compartida por las dos paginas
-let accionPendiente = null;
+function buscarPorId(lista, id) {
+    for (let i = 0; i < lista.length; i++) {
+        if (lista[i].id == id) {
+            return lista[i];
+        }
+    }
 
-function confirmar(titulo, texto, boton, accion, peligro) {
+    return null;
+}
+
+function nuevoId(lista) {
+    let mayor = 0;
+
+    for (let i = 0; i < lista.length; i++) {
+        if (lista[i].id > mayor) {
+            mayor = lista[i].id;
+        }
+    }
+
+    return mayor + 1;
+}
+
+function etiqueta(texto) {
+    return '<span class="pill pill-' + texto.toLowerCase() + '">' + texto + '</span>';
+}
+
+// ventana de confirmacion (la abre Bootstrap con data-bs-toggle)
+let accionPendiente = "";
+let idPendiente = 0;
+
+function prepararModal(titulo, texto, boton, peligro) {
     document.getElementById("modalTitulo").textContent = titulo;
     document.getElementById("modalTexto").innerHTML = texto;
     document.getElementById("modalBoton").textContent = boton;
-    document.getElementById("modalBoton").className = peligro ? "btn btn-peligro flex-fill" : "btn btn-donacion flex-fill";
-    document.getElementById("modalIcono").className = peligro ? "icono-dato icono-rojo mb-3" : "icono-dato icono-verde mb-3";
-    document.getElementById("modalIcono").innerHTML = peligro ? '<i class="bi bi-trash"></i>' : '<i class="bi bi-check-lg"></i>';
-    accionPendiente = accion;
-    bootstrap.Modal.getOrCreateInstance(document.getElementById("modalConfirmar")).show();
+
+    if (peligro) {
+        document.getElementById("modalIcono").className = "icono-dato icono-rojo mb-3";
+        document.getElementById("modalIcono").textContent = "🗑️";
+        document.getElementById("modalBoton").className = "btn btn-peligro flex-fill";
+    } else {
+        document.getElementById("modalIcono").className = "icono-dato icono-verde mb-3";
+        document.getElementById("modalIcono").textContent = "✅";
+        document.getElementById("modalBoton").className = "btn btn-donacion flex-fill";
+    }
 }
 
-function ejecutarAccion() {
-    accionPendiente();
-    bootstrap.Modal.getInstance(document.getElementById("modalConfirmar")).hide();
+function confirmarAccion() {
+    if (accionPendiente == "categoria") {
+        eliminarCategoria(idPendiente);
+    } else if (accionPendiente == "rechazar") {
+        rechazarSolicitud(idPendiente);
+    } else if (accionPendiente == "entregar") {
+        marcarEntregada(idPendiente);
+    }
 }
 
-function pill(texto) {
-    return `<span class="pill pill-${texto.toLowerCase()}">${texto}</span>`;
-}
 
-// ---------- Panel del administrador (HU10) ----------
+// ===== panel del administrador =====
 
-function iniciarPanelAdmin() {
+function mostrarPanel() {
     mostrarResumen();
     mostrarUsuarios();
     mostrarCategorias();
     mostrarDonaciones();
     mostrarSolicitudes();
+}
 
-    document.getElementById("formCategoria").addEventListener("submit", agregarCategoria);
+function marcarMenu(id) {
+    let menus = ["menuDashboard", "menuUsuarios", "menuCategorias", "menuDonaciones", "menuSolicitudes"];
 
-    document.querySelectorAll(".admin-menu a").forEach(function (enlace) {
-        enlace.addEventListener("click", function () {
-            document.querySelector(".admin-menu a.activo").classList.remove("activo");
-            enlace.classList.add("activo");
-        });
-    });
+    for (let i = 0; i < menus.length; i++) {
+        document.getElementById(menus[i]).classList.remove("activo");
+    }
+
+    document.getElementById(id).classList.add("activo");
 }
 
 function mostrarResumen() {
-    const usuarios = leer("usuarios_app");
-    const donaciones = leer("donaciones_app");
-    const solicitudes = leer("solicitudes_app");
-    const pendientes = solicitudes.filter(s => s.estado === "Pendiente").length;
+    let usuarios = leer("usuarios_app");
+    let donaciones = leer("donaciones_app");
+    let solicitudes = leer("solicitudes_app");
+
+    let organizaciones = 0;
+    for (let i = 0; i < usuarios.length; i++) {
+        if (usuarios[i].rol == "organizacion" && usuarios[i].estado == "Activo") {
+            organizaciones = organizaciones + 1;
+        }
+    }
+
+    let disponibles = 0;
+    let entregadas = 0;
+    for (let i = 0; i < donaciones.length; i++) {
+        if (donaciones[i].estado == "Disponible") {
+            disponibles = disponibles + 1;
+        } else if (donaciones[i].estado == "Entregada") {
+            entregadas = entregadas + 1;
+        }
+    }
+
+    let pendientes = 0;
+    for (let i = 0; i < solicitudes.length; i++) {
+        if (solicitudes[i].estado == "Pendiente") {
+            pendientes = pendientes + 1;
+        }
+    }
 
     document.getElementById("totalUsuarios").textContent = usuarios.length;
-    document.getElementById("totalOrganizaciones").textContent = usuarios.filter(u => u.rol === "organizacion" && u.estado === "Activo").length;
-    document.getElementById("totalDisponibles").textContent = donaciones.filter(d => d.estado === "Disponible").length;
-    document.getElementById("totalEntregadas").textContent = donaciones.filter(d => d.estado === "Entregada").length;
+    document.getElementById("totalOrganizaciones").textContent = organizaciones;
+    document.getElementById("totalDisponibles").textContent = disponibles;
+    document.getElementById("totalEntregadas").textContent = entregadas;
     document.getElementById("totalPendientes").textContent = pendientes;
     document.getElementById("totalCategorias").textContent = leer("categorias_app").length;
     document.getElementById("contadorPendientes").textContent = pendientes;
 
-    const recientes = solicitudes.slice().sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 6);
-    const lista = document.getElementById("listaActividad");
-
-    if (recientes.length === 0) {
-        lista.innerHTML = `<li class="texto-secundario">Todavía no hay actividad.</li>`;
-        return;
+    // las 5 solicitudes mas recientes
+    let html = "";
+    for (let i = solicitudes.length - 1; i >= 0 && i >= solicitudes.length - 5; i--) {
+        html = html +
+            '<li>' +
+                '<span class="icono-dato icono-naranja">📥</span>' +
+                '<div>' +
+                    '<p class="mb-1">Solicitud ' + solicitudes[i].estado.toLowerCase() + ': ' + solicitudes[i].donacionTitulo + '</p>' +
+                    '<small class="texto-secundario">' + solicitudes[i].fecha + '</small>' +
+                '</div>' +
+            '</li>';
     }
 
-    lista.innerHTML = recientes.map(s => `
-        <li>
-            <span class="icono-dato icono-naranja"><i class="bi bi-inbox"></i></span>
-            <div>
-                <p class="mb-1">Solicitud ${s.estado.toLowerCase()}: ${s.donacionTitulo}</p>
-                <small class="texto-secundario">${s.fecha}</small>
-            </div>
-        </li>
-    `).join("");
+    if (html == "") {
+        html = '<li class="texto-secundario">Todavía no hay actividad.</li>';
+    }
+
+    document.getElementById("listaActividad").innerHTML = html;
 }
 
 function iniciales(nombre) {
-    const partes = nombre.split(" ");
-    const segunda = partes.length > 1 ? partes[1][0] : partes[0][1];
-    return (partes[0][0] + segunda).toUpperCase();
+    let espacio = nombre.indexOf(" ");
+
+    if (espacio == -1) {
+        return nombre.substring(0, 2).toUpperCase();
+    }
+
+    return (nombre.charAt(0) + nombre.charAt(espacio + 1)).toUpperCase();
 }
 
 function nombreRol(rol) {
-    if (rol === "organizacion") return "Organización";
-    if (rol === "administrador") return "Administrador";
-    return "Donante";
+    if (rol == "organizacion") {
+        return "Organización";
+    } else if (rol == "administrador") {
+        return "Administrador";
+    } else {
+        return "Donante";
+    }
 }
 
 function mostrarUsuarios() {
-    const usuarios = leer("usuarios_app");
-    document.getElementById("cantidadUsuarios").textContent = usuarios.length + " usuarios";
+    let usuarios = leer("usuarios_app");
+    let html = "";
 
-    document.getElementById("tablaUsuarios").innerHTML = usuarios.map(u => `
-        <tr>
-            <td>
-                <div class="d-flex align-items-center gap-2">
-                    <span class="avatar avatar-${u.rol}">${iniciales(u.nombre)}</span>
-                    <strong>${u.nombre}</strong>
-                </div>
-            </td>
-            <td class="texto-secundario">${u.correo}</td>
-            <td><span class="pill pill-${u.rol}">${nombreRol(u.rol).toUpperCase()}</span></td>
-            <td><span class="pill pill-${u.estado.toLowerCase()}">● ${u.estado}</span></td>
-            <td class="texto-secundario text-nowrap">${u.fecha}</td>
-            <td>
-                ${u.rol === "administrador" ? "" : `
-                <button type="button" class="btn btn-sm ${u.estado === "Activo" ? "btn-eliminar" : "btn-accion"}" onclick="cambiarEstadoUsuario(${u.id})">
-                    ${u.estado === "Activo" ? "Desactivar" : "Activar"}
-                </button>`}
-            </td>
-        </tr>
-    `).join("");
+    for (let i = 0; i < usuarios.length; i++) {
+        let u = usuarios[i];
+        let boton = "";
+
+        if (u.rol != "administrador") {
+            if (u.estado == "Activo") {
+                boton = '<button type="button" class="btn btn-sm btn-eliminar" onclick="cambiarEstadoUsuario(' + u.id + ')">Desactivar</button>';
+            } else {
+                boton = '<button type="button" class="btn btn-sm btn-accion" onclick="cambiarEstadoUsuario(' + u.id + ')">Activar</button>';
+            }
+        }
+
+        html = html +
+            '<tr>' +
+                '<td>' +
+                    '<div class="d-flex align-items-center gap-2">' +
+                        '<span class="avatar avatar-' + u.rol + '">' + iniciales(u.nombre) + '</span>' +
+                        '<strong>' + u.nombre + '</strong>' +
+                    '</div>' +
+                '</td>' +
+                '<td class="texto-secundario">' + u.correo + '</td>' +
+                '<td><span class="pill pill-' + u.rol + '">' + nombreRol(u.rol) + '</span></td>' +
+                '<td>' + etiqueta(u.estado) + '</td>' +
+                '<td class="texto-secundario text-nowrap">' + u.fecha + '</td>' +
+                '<td>' + boton + '</td>' +
+            '</tr>';
+    }
+
+    document.getElementById("cantidadUsuarios").textContent = usuarios.length + " usuarios";
+    document.getElementById("tablaUsuarios").innerHTML = html;
 }
 
 function cambiarEstadoUsuario(id) {
-    const usuarios = leer("usuarios_app");
-    const usuario = usuarios.find(u => u.id === id);
-    usuario.estado = usuario.estado === "Activo" ? "Inactivo" : "Activo";
+    let usuarios = leer("usuarios_app");
+    let usuario = buscarPorId(usuarios, id);
+
+    if (usuario.estado == "Activo") {
+        usuario.estado = "Inactivo";
+    } else {
+        usuario.estado = "Activo";
+    }
+
     guardar("usuarios_app", usuarios);
     mostrarUsuarios();
     mostrarResumen();
 }
 
 function contarDonaciones(categoria) {
-    return leer("donaciones_app").filter(d => d.categoria === categoria).length;
-}
+    let donaciones = leer("donaciones_app");
+    let total = 0;
 
-function textoDonaciones(total) {
-    return total === 1 ? "1 donación asociada" : total + " donaciones asociadas";
+    for (let i = 0; i < donaciones.length; i++) {
+        if (donaciones[i].categoria == categoria) {
+            total = total + 1;
+        }
+    }
+
+    return total;
 }
 
 function mostrarCategorias() {
-    document.getElementById("listaCategorias").innerHTML = leer("categorias_app").map(c => `
-        <li>
-            <div>
-                <strong>${c.nombre}</strong>
-                <small class="d-block texto-secundario">${textoDonaciones(contarDonaciones(c.nombre))}</small>
-            </div>
-            <button type="button" class="btn btn-sm btn-eliminar" onclick="pedirEliminarCategoria(${c.id})">Eliminar</button>
-        </li>
-    `).join("");
-}
+    let categorias = leer("categorias_app");
+    let html = "";
 
-function agregarCategoria(evento) {
-    evento.preventDefault();
+    for (let i = 0; i < categorias.length; i++) {
+        let c = categorias[i];
+        let total = contarDonaciones(c.nombre);
+        let texto = total + " donaciones asociadas";
+        let boton = "";
 
-    const campo = document.getElementById("nombreCategoria");
-    const error = document.getElementById("errorCategoria");
-    const nombre = campo.value.trim();
-    const categorias = leer("categorias_app");
-    let mensaje = "";
+        if (total == 1) {
+            texto = "1 donación asociada";
+        }
 
-    if (nombre === "") {
-        mensaje = "Escriba el nombre de la categoría.";
-    } else if (categorias.some(c => c.nombre.toLowerCase() === nombre.toLowerCase())) {
-        mensaje = "Esa categoría ya existe.";
+        // una categoria con donaciones no se puede eliminar
+        if (total > 0) {
+            boton = '<button type="button" class="btn btn-sm btn-eliminar" disabled>Eliminar</button>';
+        } else {
+            boton = '<button type="button" class="btn btn-sm btn-eliminar" data-bs-toggle="modal" data-bs-target="#modalConfirmar" onclick="prepararEliminarCategoria(' + c.id + ')">Eliminar</button>';
+        }
+
+        html = html +
+            '<li>' +
+                '<div>' +
+                    '<strong>' + c.nombre + '</strong>' +
+                    '<small class="d-block texto-secundario">' + texto + '</small>' +
+                '</div>' +
+                boton +
+            '</li>';
     }
 
-    campo.className = mensaje ? "form-control input-error" : "form-control";
-    error.textContent = mensaje;
-    if (mensaje) return;
+    document.getElementById("listaCategorias").innerHTML = html;
+}
 
-    categorias.push({ id: Date.now(), nombre: nombre });
+function agregarCategoria() {
+    let campo = document.getElementById("nombreCategoria");
+    let error = document.getElementById("errorCategoria");
+    let nombre = campo.value.trim();
+    let categorias = leer("categorias_app");
+    let mensaje = "";
+
+    if (nombre == "") {
+        mensaje = "Escriba el nombre de la categoría.";
+    } else {
+        for (let i = 0; i < categorias.length; i++) {
+            if (categorias[i].nombre.toLowerCase() == nombre.toLowerCase()) {
+                mensaje = "Esa categoría ya existe.";
+            }
+        }
+    }
+
+    error.textContent = mensaje;
+
+    if (mensaje != "") {
+        campo.className = "form-control input-error";
+        return;
+    }
+
+    campo.className = "form-control";
+    categorias.push({ id: nuevoId(categorias), nombre: nombre });
     guardar("categorias_app", categorias);
     campo.value = "";
     mostrarCategorias();
     mostrarResumen();
 }
 
-function pedirEliminarCategoria(id) {
-    const categoria = leer("categorias_app").find(c => c.id === id);
-    const total = contarDonaciones(categoria.nombre);
-    const aviso = document.getElementById("avisoCategoria");
+function prepararEliminarCategoria(id) {
+    let categoria = buscarPorId(leer("categorias_app"), id);
 
-    if (total > 0) {
-        aviso.textContent = `No se puede eliminar "${categoria.nombre}" porque tiene ${textoDonaciones(total)}.`;
-        aviso.style.display = "block";
-        return;
-    }
-
-    aviso.style.display = "none";
-    confirmar(
+    accionPendiente = "categoria";
+    idPendiente = id;
+    prepararModal(
         "¿Eliminar categoría?",
-        `Está a punto de eliminar <strong>${categoria.nombre}</strong>. Esta acción no se puede deshacer.`,
+        "Está a punto de eliminar <strong>" + categoria.nombre + "</strong>. Esta acción no se puede deshacer.",
         "Eliminar",
-        function () {
-            guardar("categorias_app", leer("categorias_app").filter(c => c.id !== id));
-            mostrarCategorias();
-            mostrarResumen();
-        },
         true
     );
 }
 
-function mostrarDonaciones() {
-    const donaciones = leer("donaciones_app");
-    const lista = document.getElementById("listaDonaciones");
+function eliminarCategoria(id) {
+    let categorias = leer("categorias_app");
+    let quedan = [];
 
-    if (donaciones.length === 0) {
-        lista.innerHTML = `<li class="texto-secundario">No hay donaciones registradas.</li>`;
-        return;
+    for (let i = 0; i < categorias.length; i++) {
+        if (categorias[i].id != id) {
+            quedan.push(categorias[i]);
+        }
     }
 
-    lista.innerHTML = donaciones.map(d => `
-        <li>
-            <div>
-                <strong>${d.titulo}</strong>
-                <small class="d-block texto-secundario">${d.donante} · ${d.categoria} · ${d.provincia}</small>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                ${pill(d.estado)}
-                <a href="detalle-donacion.html?id=${d.id}" class="btn btn-sm btn-accion">Ver</a>
-            </div>
-        </li>
-    `).join("");
+    guardar("categorias_app", quedan);
+    mostrarCategorias();
+    mostrarResumen();
+}
+
+function mostrarDonaciones() {
+    let donaciones = leer("donaciones_app");
+    let html = "";
+
+    for (let i = 0; i < donaciones.length; i++) {
+        let d = donaciones[i];
+
+        html = html +
+            '<li>' +
+                '<div>' +
+                    '<strong>' + d.titulo + '</strong>' +
+                    '<small class="d-block texto-secundario">' + d.donante + ' · ' + d.categoria + ' · ' + d.provincia + '</small>' +
+                '</div>' +
+                '<div class="d-flex align-items-center gap-2">' +
+                    etiqueta(d.estado) +
+                    '<a href="detalle-donacion.html?id=' + d.id + '" class="btn btn-sm btn-accion">Ver</a>' +
+                '</div>' +
+            '</li>';
+    }
+
+    if (html == "") {
+        html = '<li class="texto-secundario">No hay donaciones registradas.</li>';
+    }
+
+    document.getElementById("listaDonaciones").innerHTML = html;
 }
 
 function mostrarSolicitudes() {
-    const solicitudes = leer("solicitudes_app");
-    const tabla = document.getElementById("tablaSolicitudes");
+    let solicitudes = leer("solicitudes_app");
+    let html = "";
 
-    if (solicitudes.length === 0) {
-        tabla.innerHTML = `<tr><td colspan="5" class="text-center texto-secundario py-4">No hay solicitudes registradas.</td></tr>`;
-        return;
+    for (let i = 0; i < solicitudes.length; i++) {
+        let s = solicitudes[i];
+
+        html = html +
+            '<tr>' +
+                '<td class="texto-secundario text-nowrap">' + s.fecha + '</td>' +
+                '<td><strong>' + s.donacionTitulo + '</strong></td>' +
+                '<td>' + s.donante + '</td>' +
+                '<td class="texto-secundario">' + s.motivo + '</td>' +
+                '<td>' + etiqueta(s.estado) + '</td>' +
+            '</tr>';
     }
 
-    tabla.innerHTML = solicitudes.map(s => `
-        <tr>
-            <td class="texto-secundario text-nowrap">${s.fecha}</td>
-            <td><strong>${s.donacionTitulo}</strong></td>
-            <td>${s.donante}</td>
-            <td class="texto-secundario">${s.motivo}</td>
-            <td>${pill(s.estado)}</td>
-        </tr>
-    `).join("");
+    if (html == "") {
+        html = '<tr><td colspan="5" class="text-center texto-secundario py-4">No hay solicitudes registradas.</td></tr>';
+    }
+
+    document.getElementById("tablaSolicitudes").innerHTML = html;
 }
 
-// ---------- Solicitudes recibidas por el donante (HU08 y HU09) ----------
+
+// ===== solicitudes recibidas por el donante =====
 
 function mostrarRecibidas() {
-    const donaciones = leer("donaciones_app");
-    const solicitudes = leer("solicitudes_app");
-    const conSolicitudes = donaciones.filter(d => solicitudes.some(s => s.donacionId === d.id));
-    const lista = document.getElementById("listaRecibidas");
+    let donaciones = leer("donaciones_app");
+    let solicitudes = leer("solicitudes_app");
+    let html = "";
 
-    if (conSolicitudes.length === 0) {
-        lista.innerHTML = `<div class="card card-body text-center texto-secundario py-5">Todavía no ha recibido solicitudes.</div>`;
-        return;
-    }
+    for (let i = 0; i < donaciones.length; i++) {
+        let d = donaciones[i];
+        let filas = "";
 
-    lista.innerHTML = conSolicitudes.map(d => {
-        const recibidas = solicitudes.filter(s => s.donacionId === d.id);
-        let entrega = "";
+        for (let j = 0; j < solicitudes.length; j++) {
+            let s = solicitudes[j];
 
-        if (d.estado === "Aceptada") {
-            entrega = `<button type="button" class="btn btn-donacion btn-sm" onclick="pedirEntrega(${d.id})">Marcar como entregada</button>`;
-        } else if (d.estado === "Entregada") {
-            entrega = `<span class="texto-secundario small"><i class="bi bi-check-circle"></i> Entrega registrada</span>`;
+            if (s.donacionId == d.id) {
+                let botones = "";
+
+                if (s.estado == "Pendiente") {
+                    botones =
+                        '<button type="button" class="btn btn-sm btn-donacion" onclick="aceptarSolicitud(' + s.id + ')">Aceptar</button> ' +
+                        '<button type="button" class="btn btn-sm btn-eliminar" data-bs-toggle="modal" data-bs-target="#modalConfirmar" onclick="prepararRechazo(' + s.id + ')">Rechazar</button>';
+                }
+
+                filas = filas +
+                    '<tr>' +
+                        '<td class="texto-secundario text-nowrap">' + s.fecha + '</td>' +
+                        '<td>' + s.motivo + '</td>' +
+                        '<td class="text-nowrap">' + s.telefono + '</td>' +
+                        '<td>' + etiqueta(s.estado) + '</td>' +
+                        '<td class="text-end text-nowrap">' + botones + '</td>' +
+                    '</tr>';
+            }
         }
 
-        const filas = recibidas.map(s => `
-            <tr>
-                <td class="texto-secundario text-nowrap">${s.fecha}</td>
-                <td>${s.motivo}</td>
-                <td class="text-nowrap">${s.telefono}</td>
-                <td>${pill(s.estado)}</td>
-                <td class="text-end text-nowrap">
-                    ${s.estado === "Pendiente" ? `
-                    <button type="button" class="btn btn-sm btn-donacion" onclick="aceptarSolicitud(${s.id})">Aceptar</button>
-                    <button type="button" class="btn btn-sm btn-eliminar" onclick="pedirRechazo(${s.id})">Rechazar</button>` : ""}
-                </td>
-            </tr>
-        `).join("");
+        if (filas != "") {
+            let entrega = "";
 
-        return `
-            <section class="card mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-                        <div>
-                            <h2 class="titulo-tarjeta">${d.titulo}</h2>
-                            <small class="texto-secundario">${d.categoria} · ${d.provincia} · Cantidad: ${d.cantidad}</small>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            ${pill(d.estado)}
-                            ${entrega}
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table tabla-admin align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Motivo</th>
-                                    <th>Teléfono</th>
-                                    <th>Estado</th>
-                                    <th class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>${filas}</tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-        `;
-    }).join("");
+            if (d.estado == "Aceptada") {
+                entrega = '<button type="button" class="btn btn-donacion btn-sm" data-bs-toggle="modal" data-bs-target="#modalConfirmar" onclick="prepararEntrega(' + d.id + ')">Marcar como entregada</button>';
+            } else if (d.estado == "Entregada") {
+                entrega = '<span class="texto-secundario small">✔ Entrega registrada</span>';
+            }
+
+            html = html +
+                '<section class="card mb-4">' +
+                    '<div class="card-body">' +
+                        '<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">' +
+                            '<div>' +
+                                '<h2 class="titulo-tarjeta">' + d.titulo + '</h2>' +
+                                '<small class="texto-secundario">' + d.categoria + ' · ' + d.provincia + ' · Cantidad: ' + d.cantidad + '</small>' +
+                            '</div>' +
+                            '<div class="d-flex align-items-center gap-2">' + etiqueta(d.estado) + entrega + '</div>' +
+                        '</div>' +
+                        '<div class="table-responsive">' +
+                            '<table class="table tabla-admin align-middle mb-0">' +
+                                '<thead>' +
+                                    '<tr><th>Fecha</th><th>Motivo</th><th>Teléfono</th><th>Estado</th><th class="text-end">Acciones</th></tr>' +
+                                '</thead>' +
+                                '<tbody>' + filas + '</tbody>' +
+                            '</table>' +
+                        '</div>' +
+                    '</div>' +
+                '</section>';
+        }
+    }
+
+    if (html == "") {
+        html = '<div class="card card-body text-center texto-secundario py-5">Todavía no ha recibido solicitudes.</div>';
+    }
+
+    document.getElementById("listaRecibidas").innerHTML = html;
 }
 
 function avisar(texto) {
-    const aviso = document.getElementById("avisoRecibidas");
+    let aviso = document.getElementById("avisoRecibidas");
     aviso.textContent = texto;
     aviso.style.display = "block";
 }
 
 function aceptarSolicitud(id) {
-    const solicitudes = leer("solicitudes_app");
-    const donaciones = leer("donaciones_app");
-    const elegida = solicitudes.find(s => s.id === id);
+    let solicitudes = leer("solicitudes_app");
+    let donaciones = leer("donaciones_app");
+    let elegida = buscarPorId(solicitudes, id);
 
-    // HU08: al aceptar una, las demas pendientes de la misma donacion se rechazan
-    solicitudes.forEach(function (s) {
-        if (s.donacionId === elegida.donacionId && s.estado === "Pendiente") {
-            s.estado = "Rechazada";
+    // las demas pendientes de la misma donacion quedan rechazadas
+    for (let i = 0; i < solicitudes.length; i++) {
+        if (solicitudes[i].donacionId == elegida.donacionId && solicitudes[i].estado == "Pendiente") {
+            solicitudes[i].estado = "Rechazada";
         }
-    });
+    }
+
     elegida.estado = "Aceptada";
-    donaciones.find(d => d.id === elegida.donacionId).estado = "Aceptada";
+    buscarPorId(donaciones, elegida.donacionId).estado = "Aceptada";
 
     guardar("solicitudes_app", solicitudes);
     guardar("donaciones_app", donaciones);
@@ -376,26 +517,34 @@ function aceptarSolicitud(id) {
     avisar("Solicitud aceptada. Coordine la entrega con la organización y luego márquela como entregada.");
 }
 
-function pedirRechazo(id) {
-    confirmar(
+function prepararRechazo(id) {
+    accionPendiente = "rechazar";
+    idPendiente = id;
+    prepararModal(
         "¿Rechazar solicitud?",
         "La organización verá la solicitud como <strong>Rechazada</strong>. Esta acción no se puede deshacer.",
         "Rechazar",
-        function () { rechazarSolicitud(id); },
         true
     );
 }
 
 function rechazarSolicitud(id) {
-    const solicitudes = leer("solicitudes_app");
-    const donaciones = leer("donaciones_app");
-    const elegida = solicitudes.find(s => s.id === id);
+    let solicitudes = leer("solicitudes_app");
+    let donaciones = leer("donaciones_app");
+    let elegida = buscarPorId(solicitudes, id);
     elegida.estado = "Rechazada";
 
-    // HU08: si ya no quedan solicitudes abiertas, la donacion vuelve a estar disponible
-    const quedanAbiertas = solicitudes.some(s => s.donacionId === elegida.donacionId && (s.estado === "Pendiente" || s.estado === "Aceptada"));
-    if (!quedanAbiertas) {
-        donaciones.find(d => d.id === elegida.donacionId).estado = "Disponible";
+    // si no queda ninguna abierta, la donacion vuelve a estar disponible
+    let abiertas = 0;
+    for (let i = 0; i < solicitudes.length; i++) {
+        let s = solicitudes[i];
+        if (s.donacionId == elegida.donacionId && (s.estado == "Pendiente" || s.estado == "Aceptada")) {
+            abiertas = abiertas + 1;
+        }
+    }
+
+    if (abiertas == 0) {
+        buscarPorId(donaciones, elegida.donacionId).estado = "Disponible";
     }
 
     guardar("solicitudes_app", solicitudes);
@@ -404,28 +553,35 @@ function rechazarSolicitud(id) {
     avisar("Solicitud rechazada.");
 }
 
-function pedirEntrega(donacionId) {
-    confirmar(
+function prepararEntrega(donacionId) {
+    accionPendiente = "entregar";
+    idPendiente = donacionId;
+    prepararModal(
         "¿Marcar como entregada?",
         "La donación quedará como <strong>Entregada</strong> y ya no se podrá editar.",
         "Confirmar entrega",
-        function () { marcarEntregada(donacionId); },
         false
     );
 }
 
 function marcarEntregada(donacionId) {
-    const donaciones = leer("donaciones_app");
-    const donacion = donaciones.find(d => d.id === donacionId);
-    const tieneAceptada = leer("solicitudes_app").some(s => s.donacionId === donacionId && s.estado === "Aceptada");
+    let solicitudes = leer("solicitudes_app");
+    let donaciones = leer("donaciones_app");
+    let aceptada = false;
 
-    // HU09: solo se entrega si hay una solicitud aceptada
-    if (!tieneAceptada) {
+    for (let i = 0; i < solicitudes.length; i++) {
+        if (solicitudes[i].donacionId == donacionId && solicitudes[i].estado == "Aceptada") {
+            aceptada = true;
+        }
+    }
+
+    // solo se entrega si hay una solicitud aceptada
+    if (aceptada == false) {
         avisar("Solo se puede marcar como entregada una donación con una solicitud aceptada.");
         return;
     }
 
-    donacion.estado = "Entregada";
+    buscarPorId(donaciones, donacionId).estado = "Entregada";
     guardar("donaciones_app", donaciones);
     mostrarRecibidas();
     avisar("Entrega registrada. El proceso de esta donación quedó cerrado.");
