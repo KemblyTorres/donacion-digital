@@ -1,0 +1,87 @@
+.portada {
+    padding: 72px 0 56px 0;
+    background-color: var(--verde-fondo);
+}
+
+.portada-titulo {
+    font-size: 40px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.resaltado {
+    color: var(--verde-principal);
+    font-style: italic;
+}
+
+.portada-texto {
+    max-width: 600px;
+    margin: 16px auto 24px auto;
+}
+
+.estadistica-numero {
+    display: block;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--verde-principal);
+}
+
+.estadistica-texto {
+    display: block;
+    font-size: 12px;
+    color: var(--texto-secundario);
+}
+
+
+.titulo-item {
+    font-size: 16px;
+    font-weight: 800;
+}
+
+
+.card-beneficio {
+    background-color: var(--verde-fondo);
+}
+
+
+.paso-numero {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--verde-claro);
+    margin-bottom: 4px;
+}
+
+
+.llamado-accion {
+    background-color: var(--verde-principal);
+    color: white;
+    padding: 56px 0;
+}
+
+.llamado-accion h2 {
+    color: white;
+}
+
+.btn-blanco {
+    --bs-btn-color: var(--verde-principal);
+    --bs-btn-bg: white;
+    --bs-btn-border-color: white;
+    --bs-btn-hover-color: var(--verde-principal);
+    --bs-btn-hover-bg: var(--verde-fondo);
+    --bs-btn-hover-border-color: var(--verde-fondo);
+    font-weight: 700;
+}
+
+.btn-blanco-borde {
+    --bs-btn-color: white;
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: white;
+    --bs-btn-hover-color: var(--verde-principal);
+    --bs-btn-hover-bg: white;
+    --bs-btn-hover-border-color: white;
+    font-weight: 700;
+}
