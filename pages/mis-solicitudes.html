@@ -26,6 +26,7 @@
                 <ul class="menu d-flex align-items-center gap-3 list-unstyled mb-0">
                     <li><a href="catalogo.html" class="text-decoration-none text-secondary">Catálogo</a></li>
                     <li><a href="mis-solicitudes.html" class="text-decoration-none fw-bold text-success">Mis Solicitudes</a></li>
+                    <li><a href="perfil-organizacion.html" class="text-decoration-none text-secondary">Mi Perfil</a></li>
                     <li><a href="login.html" class="btn btn-donacion-borde btn-sm">Iniciar Sesión</a></li>
                     <li><a href="registro.html" class="btn btn-donacion btn-sm">Registrarse</a></li>
                 </ul>
@@ -41,7 +42,6 @@
             <p class="text-muted">Consulte el estado actual de las solicitudes gestionadas por su organización beneficiaria.</p>
         </div>
 
-        <!-- Tabla de Solicitudes HU07 -->
         <section class="card shadow-sm border-0 rounded-3 overflow-hidden">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -54,9 +54,7 @@
                             <th scope="col" class="py-3 px-3">Estado de Solicitud</th>
                         </tr>
                     </thead>
-                    <tbody id="tbodySolicitudes">
-                        <!-- Renderizado automáticamente con catalogo.js -->
-                    </tbody>
+                    <tbody id="tbodySolicitudes"></tbody>
                 </table>
             </div>
         </section>

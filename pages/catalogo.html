@@ -26,6 +26,7 @@
                 <ul class="menu d-flex align-items-center gap-3 list-unstyled mb-0">
                     <li><a href="catalogo.html" class="text-decoration-none fw-bold text-success">Catálogo</a></li>
                     <li><a href="mis-solicitudes.html" class="text-decoration-none text-secondary">Mis Solicitudes</a></li>
+                    <li><a href="perfil-organizacion.html" class="text-decoration-none text-secondary">Mi Perfil</a></li>
                     <li><a href="login.html" class="btn btn-donacion-borde btn-sm">Iniciar Sesión</a></li>
                     <li><a href="registro.html" class="btn btn-donacion btn-sm">Registrarse</a></li>
                 </ul>
@@ -41,17 +42,16 @@
             <p class="text-muted">Explore y filtre recursos funcionales para canalizar a comunidades vulnerables en Costa Rica.</p>
         </div>
 
-        <!-- Barra de Búsqueda y Filtros Combinados (HU04) -->
         <section class="card shadow-sm border-0 p-3 mb-4 bg-light rounded-3">
             <div class="row g-3 align-items-center">
-                <div class="col-12 col-md-5">
+                <div class="col-12 col-md-4">
                     <label for="inputBuscar" class="form-label small text-muted mb-1">Buscar por palabra clave</label>
-                    <input type="text" id="inputBuscar" class="form-control" placeholder="Ej. pupitres, ropa, cuadernos..." autocomplete="off">
+                    <input type="text" id="inputBuscar" class="form-control" placeholder="Ej. pupitres, ropa, cuadernos..." autocomplete="off" oninput="mostrarCatalogo()">
                 </div>
 
                 <div class="col-12 col-sm-6 col-md-3">
                     <label for="selectCategoria" class="form-label small text-muted mb-1">Categoría</label>
-                    <select id="selectCategoria" class="form-select">
+                    <select id="selectCategoria" class="form-select" onchange="mostrarCatalogo()">
                         <option value="">Todas las categorías</option>
                         <option value="Ropa y Calzado">Ropa y Calzado</option>
                         <option value="Útiles Escolares">Útiles Escolares</option>
@@ -63,7 +63,7 @@
 
                 <div class="col-12 col-sm-6 col-md-3">
                     <label for="selectProvincia" class="form-label small text-muted mb-1">Provincia</label>
-                    <select id="selectProvincia" class="form-select">
+                    <select id="selectProvincia" class="form-select" onchange="mostrarCatalogo()">
                         <option value="">Todas las provincias</option>
                         <option value="San José">San José</option>
                         <option value="Alajuela">Alajuela</option>
@@ -75,8 +75,8 @@
                     </select>
                 </div>
 
-                <div class="col-12 col-md-1 d-flex align-items-end">
-                    <button type="button" id="btnLimpiar" class="btn btn-outline-secondary w-100" title="Restablecer filtros">Limpiar</button>
+                <div class="col-12 col-md-2 d-flex align-items-end">
+                    <button type="button" id="btnLimpiar" class="btn btn-donacion-borde w-100" title="Restablecer filtros" onclick="limpiarFiltros()">Limpiar</button>
                 </div>
             </div>
         </section>
