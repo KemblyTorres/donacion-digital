@@ -33,7 +33,7 @@ function cargarDatosIniciales() {
         guardar("usuarios_app", [
             { id: 1, nombre: "Administrador", correo: "admin@donacion.com", rol: "administrador", estado: "Activo", fecha: "2026-01-15" },
             { id: 2, nombre: "María González", correo: "donante@demo.com", rol: "donante", estado: "Activo", fecha: "2026-01-20" },
-            { id: 3, nombre: "Fundación Esperanza", correo: "org@demo.com", rol: "organizacion", estado: "Activo", fecha: "2026-02-03" },
+            { id: 3, nombre: "Fundación Esperanza", correo: "org@demo.com", rol: "organizacion", estado: "Activo", fecha: "2026-02-03", telefono: "2222-3344", cedula_juridica: "3-002-123456", representante: "Laura Jiménez Solano" },
             { id: 4, nombre: "Carlos Méndez", correo: "carlos@demo.com", rol: "donante", estado: "Activo", fecha: "2026-03-10" },
             { id: 5, nombre: "Hogar San Martín", correo: "hogar@demo.com", rol: "organizacion", estado: "Inactivo", fecha: "2026-03-22" },
             { id: 6, nombre: "Ana Rodríguez", correo: "ana@demo.com", rol: "donante", estado: "Activo", fecha: "2026-04-01" },
@@ -403,6 +403,7 @@ function mostrarSolicitudes() {
             '<tr>' +
                 '<td class="texto-secundario text-nowrap">' + s.fecha + '</td>' +
                 '<td><strong>' + s.donacionTitulo + '</strong></td>' +
+                '<td>' + s.organizacion + '</td>' +
                 '<td>' + s.donante + '</td>' +
                 '<td class="texto-secundario">' + s.motivo + '</td>' +
                 '<td>' + etiqueta(s.estado) + '</td>' +
@@ -410,7 +411,7 @@ function mostrarSolicitudes() {
     }
 
     if (html == "") {
-        html = '<tr><td colspan="5" class="text-center texto-secundario py-4">No hay solicitudes registradas.</td></tr>';
+        html = '<tr><td colspan="6" class="text-center texto-secundario py-4">No hay solicitudes registradas.</td></tr>';
     }
 
     document.getElementById("tablaSolicitudes").innerHTML = html;
@@ -428,6 +429,11 @@ function mostrarRecibidas() {
         let d = donaciones[i];
         let filas = "";
 
+        // donante de prueba, el mismo de donaciones.js
+        if (d.donante != "María González") {
+            continue;
+        }
+
         for (let j = 0; j < solicitudes.length; j++) {
             let s = solicitudes[j];
 
@@ -443,6 +449,7 @@ function mostrarRecibidas() {
                 filas = filas +
                     '<tr>' +
                         '<td class="texto-secundario text-nowrap">' + s.fecha + '</td>' +
+                        '<td class="text-nowrap">' + s.organizacion + '</td>' +
                         '<td>' + s.motivo + '</td>' +
                         '<td class="text-nowrap">' + s.telefono + '</td>' +
                         '<td>' + etiqueta(s.estado) + '</td>' +
@@ -473,7 +480,7 @@ function mostrarRecibidas() {
                         '<div class="table-responsive">' +
                             '<table class="table tabla-admin align-middle mb-0">' +
                                 '<thead>' +
-                                    '<tr><th>Fecha</th><th>Motivo</th><th>Teléfono</th><th>Estado</th><th class="text-end">Acciones</th></tr>' +
+                                    '<tr><th>Fecha</th><th>Organización</th><th>Motivo</th><th>Teléfono</th><th>Estado</th><th class="text-end">Acciones</th></tr>' +
                                 '</thead>' +
                                 '<tbody>' + filas + '</tbody>' +
                             '</table>' +

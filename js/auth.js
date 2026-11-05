@@ -269,9 +269,16 @@ function iniciarSesion() {
 
             alerta.style.display = "block";
 
+        } else if (estaInactivo(correo)) {
+
+            alerta.className = "alert-error mb-3";
+            alerta.innerHTML = "<strong>Cuenta desactivada.</strong><br>" +
+                "Esta cuenta fue desactivada por el administrador.";
+            alerta.style.display = "block";
+
         } else {
 
-           
+
             intentosFallidos = 0;
 
 
@@ -288,6 +295,25 @@ function iniciarSesion() {
             }, 2000);
         }
     }
+}
+
+
+// el estado lo cambia el administrador en admin.html (usuarios_app)
+function estaInactivo(correo) {
+
+    let lista = JSON.parse(localStorage.getItem("usuarios_app"));
+
+    if (lista == null) {
+        return false;
+    }
+
+    for (let i = 0; i < lista.length; i++) {
+        if (lista[i].correo == correo && lista[i].estado == "Inactivo") {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
