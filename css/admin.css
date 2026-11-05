@@ -1,1 +1,351 @@
 /* admin.css */
+
+/* estructura del panel */
+
+.admin-contenedor {
+    display: flex;
+    flex: 1;
+}
+
+.admin-menu {
+    width: 220px;
+    flex-shrink: 0;
+    background-color: var(--verde-oscuro);
+    padding: 24px 16px;
+}
+
+.admin-menu-titulo {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+    margin-bottom: 12px;
+}
+
+.admin-menu nav {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--verde-suave);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.admin-menu a:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: white;
+    text-decoration: none;
+}
+
+.admin-menu a.activo {
+    background-color: var(--verde-titulo);
+    color: white;
+    box-shadow: inset -3px 0 0 var(--verde-medio);
+}
+
+.menu-contador {
+    margin-left: auto;
+    background-color: #FFE0B2;
+    color: var(--naranja);
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 1px 8px;
+}
+
+.admin-contenido {
+    min-width: 0;
+    padding: 40px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.admin-contenido section {
+    scroll-margin-top: 16px;
+}
+
+.usuario-admin {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--borde);
+    border-radius: 50px;
+    padding: 4px 16px 4px 4px;
+    font-size: 13px;
+    line-height: 1.2;
+}
+
+/* titulos */
+
+.titulo-panel {
+    font-size: 34px;
+}
+
+.titulo-tarjeta {
+    font-size: 17px;
+    border-left: 3px solid var(--verde-principal);
+    padding-left: 10px;
+    margin-bottom: 4px;
+}
+
+/* tarjetas de resumen */
+
+.icono-dato {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.icono-verde {
+    background-color: var(--verde-fondo);
+    color: var(--verde-principal);
+}
+
+.icono-azul {
+    background-color: #E3F2FD;
+    color: #1565C0;
+}
+
+.icono-morado {
+    background-color: #F3E5F5;
+    color: #7B1FA2;
+}
+
+.icono-naranja {
+    background-color: #FFF3E0;
+    color: var(--naranja);
+}
+
+.icono-rojo {
+    background-color: #FDECEA;
+    color: var(--rojo);
+}
+
+.numero-dato {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 12px 0 4px 0;
+}
+
+/* listas */
+
+.lista-actividad,
+.lista-admin {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.lista-actividad li {
+    display: flex;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--borde);
+    font-size: 13px;
+}
+
+.lista-actividad .icono-dato {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+}
+
+.lista-admin li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--borde);
+}
+
+.lista-actividad li:last-child,
+.lista-admin li:last-child {
+    border-bottom: none;
+}
+
+/* tablas */
+
+.tabla-admin th {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+    background-color: var(--fondo);
+    white-space: nowrap;
+}
+
+.tabla-admin td {
+    font-size: 14px;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+}
+
+.avatar-donante {
+    background-color: var(--verde-principal);
+}
+
+.avatar-organizacion {
+    background-color: #1E88E5;
+}
+
+.avatar-administrador {
+    background-color: #F57C00;
+}
+
+/* etiquetas de rol y estado */
+
+.pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.pill-donante,
+.pill-activo,
+.pill-disponible,
+.pill-aceptada {
+    background-color: var(--verde-fondo);
+    color: var(--verde-principal);
+}
+
+.pill-organizacion,
+.pill-solicitada {
+    background-color: #E3F2FD;
+    color: #1565C0;
+}
+
+.pill-administrador,
+.pill-pendiente {
+    background-color: #FFF3E0;
+    color: var(--naranja);
+}
+
+.pill-inactivo,
+.pill-rechazada {
+    background-color: #FDECEA;
+    color: var(--rojo);
+}
+
+.pill-entregada {
+    background-color: #F3E5F5;
+    color: #7B1FA2;
+}
+
+/* botones */
+
+.btn-accion {
+    --bs-btn-color: var(--verde-oscuro);
+    --bs-btn-bg: white;
+    --bs-btn-border-color: var(--borde);
+    --bs-btn-hover-color: var(--verde-oscuro);
+    --bs-btn-hover-bg: var(--verde-fondo);
+    --bs-btn-hover-border-color: var(--verde-suave);
+    --bs-btn-active-color: var(--verde-oscuro);
+    --bs-btn-active-bg: var(--verde-fondo);
+    --bs-btn-active-border-color: var(--verde-suave);
+    font-weight: 600;
+}
+
+.btn-eliminar {
+    --bs-btn-color: var(--rojo);
+    --bs-btn-bg: #FDECEA;
+    --bs-btn-border-color: #F5C6C6;
+    --bs-btn-hover-color: var(--rojo);
+    --bs-btn-hover-bg: #F9D6D2;
+    --bs-btn-hover-border-color: #F5C6C6;
+    --bs-btn-active-color: var(--rojo);
+    --bs-btn-active-bg: #F9D6D2;
+    --bs-btn-active-border-color: #F5C6C6;
+    font-weight: 600;
+}
+
+.btn-peligro {
+    --bs-btn-color: white;
+    --bs-btn-bg: var(--rojo);
+    --bs-btn-border-color: var(--rojo);
+    --bs-btn-hover-color: white;
+    --bs-btn-hover-bg: #A61F1F;
+    --bs-btn-hover-border-color: #A61F1F;
+    --bs-btn-active-color: white;
+    --bs-btn-active-bg: #A61F1F;
+    --bs-btn-active-border-color: #A61F1F;
+    font-weight: 700;
+}
+
+/* ventana de confirmacion */
+
+.modal-confirmar {
+    border: none;
+    border-radius: 16px;
+    padding: 28px;
+}
+
+/* celulares y tablets */
+
+@media (max-width: 991px) {
+    .admin-contenedor {
+        flex-direction: column;
+    }
+
+    .admin-menu {
+        width: auto;
+        padding: 12px 16px;
+    }
+
+    .admin-menu-titulo {
+        display: none;
+    }
+
+    .admin-menu nav {
+        position: static;
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .admin-menu a {
+        white-space: nowrap;
+    }
+
+    .admin-menu a.activo {
+        box-shadow: none;
+    }
+
+    .admin-contenido {
+        padding: 24px 16px;
+    }
+}
