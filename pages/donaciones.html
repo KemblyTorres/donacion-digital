@@ -66,11 +66,11 @@
             <label for="categoria" class="form-label"><Strong>Categoría *</Strong></label>
             <select id="categoria" class="form-select">
             <option value="">Seleccione una categoría</option>
-            <option value="Ropa y calzado">Ropa y calzado</option>
-            <option value="Útiles escolares">Útiles escolares</option>
+            <option value="Ropa y Calzado">Ropa y Calzado</option>
+            <option value="Útiles Escolares">Útiles Escolares</option>
             <option value="Tecnología">Tecnología</option>
             <option value="Mobiliario">Mobiliario</option>
-            <option value="Otros">Otros</option>
+            <option value="Alimentos no perecederos">Alimentos no perecederos</option>
             </select>
             <div class="text-danger" id="errorCategoria"></div>
           </div>
@@ -99,8 +99,8 @@
           </div>
 
           <div class="col-md-6 mb-3">
-            <label for="estadoBien" class="form-label"><Strong>Estado del bien</Strong></label>
-            <select id="estadoBien" class="form-select">
+            <label for="estado_bien" class="form-label"><Strong>Estado del bien</Strong></label>
+            <select id="estado_bien" class="form-select">
             <option value="">Seleccione el estado</option>
             <option value="Nuevo">Nuevo</option>
             <option value="Usado en buen estado">Usado en buen estado</option>
@@ -109,8 +109,8 @@
           </div>
         </div>
 
-        <button type="button" id="btnGuardar" class="btn btn-primary" onclick="guardarDonacion()">Publicar</button>
-        <button type="button" id="btnCancelar" class="btn btn-secondary" onclick="limpiarFormulario()">Cancelar</button>
+        <button type="button" id="btnGuardar" class="btn btn-donacion" onclick="guardarDonacion()">Publicar</button>
+        <button type="button" id="btnCancelar" class="btn btn-donacion-borde" onclick="limpiarFormulario()">Cancelar</button>
       </form>
     </section>
 
@@ -155,7 +155,7 @@
         Esta acción no se puede deshacer.
     </p>
     <button type="button" id="btnConfirmarEliminar" class="btn btn-danger btn-sm" onclick="confirmarEliminar()">Confirmar</button>
-<button type="button" id="btnCancelarEliminar" class="btn btn-warning btn-sm" onclick="cancelarEliminar()">Cancelar</button>
+<button type="button" id="btnCancelarEliminar" class="btn btn-donacion-borde btn-sm" onclick="cancelarEliminar()">Cancelar</button>
 </div>
 
   </main>

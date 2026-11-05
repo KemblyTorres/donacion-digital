@@ -1,6 +1,40 @@
-let donaciones = [];
+// localStorage y JSON: ver w3schools, Web Storage API y JSON
+
+/* 
+    Importante, una vez se implemente una base de datos MySQL que vamos a ver más adelante en el curso
+    se cambiara este localstorage y probalemente se elimine. Esta es unicamente una solucion temporal.
+    En el README se agrego la referencia de donde salio localstorage. Esta sale de "w3schools".
+    Pagina proporcionada por el profesor en la primera semana del curso.
+*/
+
+// Este es el donante de prueba del admin y del login
+const nombreDonante = "María González";
+
+// Leer donaciones guardadas
+let donaciones = JSON.parse(localStorage.getItem("donaciones_app"));
+if (donaciones === null) {
+  donaciones = [];
+}
 
 let indiceEliminar = -1;
+
+
+// Guardar en storage
+function guardarEnStorage() {
+  localStorage.setItem("donaciones_app", JSON.stringify(donaciones));
+}
+
+
+// Creador de ID
+function nuevoId() {
+  let mayor = 0;
+  for (let i = 0; i < donaciones.length; i++) {
+    if (donaciones[i].id > mayor) {
+      mayor = donaciones[i].id;
+    }
+  }
+  return mayor + 1;
+}
 
 
 // Guardar
@@ -13,7 +47,7 @@ function guardarDonacion() {
   let descripcion = document.getElementById("descripcion").value;
   let categoria = document.getElementById("categoria").value;
   let cantidad = document.getElementById("cantidad").value;
-  let estadoBien = document.getElementById("estadoBien").value;
+  let estado_bien = document.getElementById("estado_bien").value;
   let provincia = document.getElementById("provincia").value;
   let indice = document.getElementById("idDonacion").value;   // vacío = publicar, número = editar
 
@@ -49,25 +83,34 @@ function guardarDonacion() {
     return;
   }
 
-  const donacion = {
-    titulo: titulo,
-    descripcion: descripcion,
-    categoria: categoria,
-    cantidad: cantidad,
-    estadoBien: estadoBien,
-    provincia: provincia,
-    estado: "Disponible"
-  };
-
   // 4. ¿Publicar o editar?
   if (indice === "") {
-    // Publicar: se agrega al final
+    // Publicar: se crea la donación con los campos que usa todo el equipo
+    const donacion = {
+      id: nuevoId(),              
+      titulo: titulo,
+      descripcion: descripcion,
+      categoria: categoria,
+      cantidad: cantidad,
+      estado_bien: estado_bien,
+      provincia: provincia,
+      fotografia: "",             
+      donante: nombreDonante,     
+      estado: "Disponible"
+    };
     donaciones[donaciones.length] = donacion;
   } else {
-    // Editar: se reemplaza la que estaba en esa posición
-    donaciones[indice] = donacion;
+    // Actualizar: solo se cambian los datos del formulario (id, donante y estado se mantienen)
+    const d = donaciones[indice];
+    d.titulo = titulo;
+    d.descripcion = descripcion;
+    d.categoria = categoria;
+    d.cantidad = cantidad;
+    d.estado_bien = estado_bien;
+    d.provincia = provincia;
   }
 
+  guardarEnStorage();
   mostrarDonaciones();
   limpiarFormulario();
 }
@@ -85,7 +128,7 @@ function editarDonacion(i) {
   document.getElementById("descripcion").value = d.descripcion;
   document.getElementById("categoria").value = d.categoria;
   document.getElementById("cantidad").value = d.cantidad;
-  document.getElementById("estadoBien").value = d.estadoBien;
+  document.getElementById("estado_bien").value = d.estado_bien;
   document.getElementById("provincia").value = d.provincia;
 
   document.getElementById("idDonacion").value = i;
@@ -120,6 +163,7 @@ function confirmarEliminar() {
   }
 
   donaciones = nuevaLista;
+  guardarEnStorage();
   cancelarEliminar();
   limpiarFormulario();
   mostrarDonaciones();
@@ -148,7 +192,7 @@ function limpiarFormulario() {
   document.getElementById("descripcion").value = "";
   document.getElementById("cantidad").value = "";
   document.getElementById("categoria").value = "";
-  document.getElementById("estadoBien").value = "";
+  document.getElementById("estado_bien").value = "";
   document.getElementById("provincia").value = "";
   document.getElementById("idDonacion").value = "";
 
@@ -164,14 +208,16 @@ function mostrarDonaciones() {
   const contenedor = document.getElementById("listaDonaciones");
   contenedor.innerHTML = "";
 
-  if (donaciones.length === 0) {
-    document.getElementById("sinDonaciones").classList.remove("d-none");
-  } else {
-    document.getElementById("sinDonaciones").classList.add("d-none");
-  }
+  let cantidadMias = 0;
 
   for (let i = 0; i < donaciones.length; i++) {
     const d = donaciones[i];
+
+    // Muestra solo las donaciones dl usuario actual
+    if (d.donante !== nombreDonante) {
+      continue;
+    }
+    cantidadMias++;
 
     let colorEstado = "";
     if (d.estado === "Disponible") {
@@ -191,8 +237,8 @@ function mostrarDonaciones() {
       aviso = '<p class="text-danger small mt-2 mb-0">No se puede modificar porque está ' + d.estado + '.</p>';
     }
 
-    let textoEstadoBien = d.estadoBien;
-    if (d.estadoBien === "") {
+    let textoEstadoBien = d.estado_bien;
+    if (d.estado_bien === "") {
       textoEstadoBien = "No indicado";
     }
 
@@ -215,11 +261,17 @@ function mostrarDonaciones() {
         '</div>' +
         '<div class="card-footer bg-white d-flex gap-2">' +
           '<button type="button" class="btn btn-donacion-borde btn-sm" onclick="editarDonacion(' + i + ')"' + bloqueo + '>Editar</button>' +
-          '<button type="button" class="btn btn-outline-danger btn-sm" onclick="pedirEliminar(' + i + ')"' + bloqueo + '>Eliminar</button>' +
+          '<button type="button" class="btn btn-eliminar btn-sm" onclick="pedirEliminar(' + i + ')"' + bloqueo + '>Eliminar</button>' +
         '</div>' +
       '</div>';
 
     contenedor.appendChild(columna);
+  }
+
+  if (cantidadMias === 0) {
+    document.getElementById("sinDonaciones").classList.remove("d-none");
+  } else {
+    document.getElementById("sinDonaciones").classList.add("d-none");
   }
 }
 
