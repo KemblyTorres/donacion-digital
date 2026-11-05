@@ -1,1 +1,179 @@
-/* donaciones.css */
+/* Nav */
+.menu-activo {
+    background-color: var(--verde-fondo);
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
+
+/* Paneles */
+.panel-donacion {
+    background-color: white;
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    padding: 28px;
+}
+
+
+/* Títulos */
+.titulo-panel {
+    border-left: 4px solid var(--verde-principal);
+    padding-left: 12px;
+    font-size: 24px;
+    margin-bottom: 0;
+}
+
+.contador {
+    background-color: var(--fondo);
+    border: 1px solid var(--borde);
+    color: var(--texto-secundario);
+    border-radius: 20px;
+    padding: 2px 12px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+
+/* Formulario */
+.form-select {
+    background-color: var(--fondo);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+}
+
+.form-select:focus {
+    background-color: white;
+    border-color: var(--verde-principal);
+}
+
+.texto-error {
+    color: var(--rojo);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+
+/* Estados */
+.estado {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.estado-disponible {
+    background-color: var(--verde-fondo);
+    color: var(--verde-principal);
+}
+
+.estado-solicitada {
+    background-color: #FFF3E0;
+    color: var(--naranja);
+}
+
+.estado-aceptada {
+    background-color: #E3F2FD;
+    color: #1565C0;
+}
+
+.estado-entregada {
+    background-color: #F3E5F5;
+    color: #7B1FA2;
+}
+
+
+/* Tarjeta */
+.tarjeta-donacion {
+    border-radius: 14px;
+}
+
+.tarjeta-donacion .card-footer {
+    background-color: white;
+    border-top: 1px solid var(--borde);
+}
+
+.etiqueta-categoria {
+    display: inline-block;
+    background-color: var(--fondo);
+    border: 1px solid var(--borde);
+    color: var(--texto-secundario);
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.titulo-donacion {
+    font-size: 18px;
+    margin-top: 12px;
+    margin-bottom: 6px;
+}
+
+.info-donacion {
+    color: var(--texto-secundario);
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.info-donacion strong {
+    color: var(--verde-oscuro);
+}
+
+.aviso-bloqueo {
+    color: var(--texto-suave);
+    font-size: 13px;
+    font-style: italic;
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+
+
+/* Botones */
+.btn-editar {
+    color: var(--verde-principal);
+    background-color: white;
+    border: 1px solid var(--borde);
+    font-weight: bold;
+}
+
+.btn-editar:hover {
+    color: var(--verde-principal);
+    background-color: var(--verde-fondo);
+    border-color: var(--verde-suave);
+}
+
+.btn-eliminar {
+    color: var(--rojo);
+    background-color: white;
+    border: 1px solid #F5A5A5;
+    font-weight: bold;
+}
+
+.btn-eliminar:hover {
+    color: var(--rojo);
+    background-color: #FDECEA;
+    border-color: var(--rojo);
+}
+
+.btn-editar:disabled,
+.btn-eliminar:disabled {
+    color: var(--texto-suave);
+    background-color: white;
+    border-color: var(--borde);
+    opacity: 0.45;
+}
+
+
+/* Celulares */
+@media (max-width: 576px) {
+    .panel-donacion {
+        padding: 18px;
+    }
+
+    .titulo-panel {
+        font-size: 20px;
+    }
+}
