@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (document.getElementById("tablaUsuarios")) {
         iniciarPanelAdmin();
+    } else if (document.getElementById("listaRecibidas")) {
+        mostrarRecibidas();
     }
 });
 
@@ -276,4 +278,155 @@ function mostrarSolicitudes() {
             <td>${pill(s.estado)}</td>
         </tr>
     `).join("");
+}
+
+// ---------- Solicitudes recibidas por el donante (HU08 y HU09) ----------
+
+function mostrarRecibidas() {
+    const donaciones = leer("donaciones_app");
+    const solicitudes = leer("solicitudes_app");
+    const conSolicitudes = donaciones.filter(d => solicitudes.some(s => s.donacionId === d.id));
+    const lista = document.getElementById("listaRecibidas");
+
+    if (conSolicitudes.length === 0) {
+        lista.innerHTML = `<div class="card card-body text-center texto-secundario py-5">Todavía no ha recibido solicitudes.</div>`;
+        return;
+    }
+
+    lista.innerHTML = conSolicitudes.map(d => {
+        const recibidas = solicitudes.filter(s => s.donacionId === d.id);
+        let entrega = "";
+
+        if (d.estado === "Aceptada") {
+            entrega = `<button type="button" class="btn btn-donacion btn-sm" onclick="pedirEntrega(${d.id})">Marcar como entregada</button>`;
+        } else if (d.estado === "Entregada") {
+            entrega = `<span class="texto-secundario small"><i class="bi bi-check-circle"></i> Entrega registrada</span>`;
+        }
+
+        const filas = recibidas.map(s => `
+            <tr>
+                <td class="texto-secundario text-nowrap">${s.fecha}</td>
+                <td>${s.motivo}</td>
+                <td class="text-nowrap">${s.telefono}</td>
+                <td>${pill(s.estado)}</td>
+                <td class="text-end text-nowrap">
+                    ${s.estado === "Pendiente" ? `
+                    <button type="button" class="btn btn-sm btn-donacion" onclick="aceptarSolicitud(${s.id})">Aceptar</button>
+                    <button type="button" class="btn btn-sm btn-eliminar" onclick="pedirRechazo(${s.id})">Rechazar</button>` : ""}
+                </td>
+            </tr>
+        `).join("");
+
+        return `
+            <section class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                        <div>
+                            <h2 class="titulo-tarjeta">${d.titulo}</h2>
+                            <small class="texto-secundario">${d.categoria} · ${d.provincia} · Cantidad: ${d.cantidad}</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            ${pill(d.estado)}
+                            ${entrega}
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table tabla-admin align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Motivo</th>
+                                    <th>Teléfono</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>${filas}</tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        `;
+    }).join("");
+}
+
+function avisar(texto) {
+    const aviso = document.getElementById("avisoRecibidas");
+    aviso.textContent = texto;
+    aviso.style.display = "block";
+}
+
+function aceptarSolicitud(id) {
+    const solicitudes = leer("solicitudes_app");
+    const donaciones = leer("donaciones_app");
+    const elegida = solicitudes.find(s => s.id === id);
+
+    // HU08: al aceptar una, las demas pendientes de la misma donacion se rechazan
+    solicitudes.forEach(function (s) {
+        if (s.donacionId === elegida.donacionId && s.estado === "Pendiente") {
+            s.estado = "Rechazada";
+        }
+    });
+    elegida.estado = "Aceptada";
+    donaciones.find(d => d.id === elegida.donacionId).estado = "Aceptada";
+
+    guardar("solicitudes_app", solicitudes);
+    guardar("donaciones_app", donaciones);
+    mostrarRecibidas();
+    avisar("Solicitud aceptada. Coordine la entrega con la organización y luego márquela como entregada.");
+}
+
+function pedirRechazo(id) {
+    confirmar(
+        "¿Rechazar solicitud?",
+        "La organización verá la solicitud como <strong>Rechazada</strong>. Esta acción no se puede deshacer.",
+        "Rechazar",
+        function () { rechazarSolicitud(id); },
+        true
+    );
+}
+
+function rechazarSolicitud(id) {
+    const solicitudes = leer("solicitudes_app");
+    const donaciones = leer("donaciones_app");
+    const elegida = solicitudes.find(s => s.id === id);
+    elegida.estado = "Rechazada";
+
+    // HU08: si ya no quedan solicitudes abiertas, la donacion vuelve a estar disponible
+    const quedanAbiertas = solicitudes.some(s => s.donacionId === elegida.donacionId && (s.estado === "Pendiente" || s.estado === "Aceptada"));
+    if (!quedanAbiertas) {
+        donaciones.find(d => d.id === elegida.donacionId).estado = "Disponible";
+    }
+
+    guardar("solicitudes_app", solicitudes);
+    guardar("donaciones_app", donaciones);
+    mostrarRecibidas();
+    avisar("Solicitud rechazada.");
+}
+
+function pedirEntrega(donacionId) {
+    confirmar(
+        "¿Marcar como entregada?",
+        "La donación quedará como <strong>Entregada</strong> y ya no se podrá editar.",
+        "Confirmar entrega",
+        function () { marcarEntregada(donacionId); },
+        false
+    );
+}
+
+function marcarEntregada(donacionId) {
+    const donaciones = leer("donaciones_app");
+    const donacion = donaciones.find(d => d.id === donacionId);
+    const tieneAceptada = leer("solicitudes_app").some(s => s.donacionId === donacionId && s.estado === "Aceptada");
+
+    // HU09: solo se entrega si hay una solicitud aceptada
+    if (!tieneAceptada) {
+        avisar("Solo se puede marcar como entregada una donación con una solicitud aceptada.");
+        return;
+    }
+
+    donacion.estado = "Entregada";
+    guardar("donaciones_app", donaciones);
+    mostrarRecibidas();
+    avisar("Entrega registrada. El proceso de esta donación quedó cerrado.");
 }
